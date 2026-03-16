@@ -3,411 +3,232 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chika Games Hub</title>
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<title>Fun Game World</title>
 
 <style>
+
 body{
-margin:0;
-font-family:Arial;
-background:#f2f4f8;
-}
-
-header{
-background:linear-gradient(90deg,#ff7a18,#1f3c88);
+background:#0f172a;
 color:white;
-padding:15px;
-display:flex;
-justify-content:space-between;
-flex-wrap:wrap;
-}
-
-nav a{
-margin:5px;
-cursor:pointer;
-font-weight:bold;
-}
-
-.page{display:none;padding:25px;}
-.active{display:block;}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:20px;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
 text-align:center;
-cursor:pointer;
-box-shadow:0 4px 10px rgba(0,0,0,.2);
+font-family:Arial;
 }
 
-button{
-background:#ff7a18;
-color:white;
-border:none;
-padding:10px 15px;
-border-radius:8px;
-cursor:pointer;
-margin-top:10px;
-}
-
-.score{
-font-size:18px;
-font-weight:bold;
-color:#1f3c88;
-margin-top:10px;
-}
-
-input{
-padding:8px;
-border-radius:6px;
-border:1px solid #ccc;
-}
-
-#memoryBoard{
-display:grid;
-grid-template-columns:repeat(4,60px);
-gap:10px;
-justify-content:center;
+h1{
 margin-top:20px;
 }
 
-.memoryCard{
-width:60px;
-height:60px;
-background:#1f3c88;
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-font-size:24px;
+button{
+padding:12px 25px;
+margin:10px;
+font-size:16px;
+border:none;
 border-radius:8px;
+cursor:pointer;
+background:#22c55e;
+color:white;
+}
+
+button:hover{
+background:#16a34a;
+}
+
+canvas{
+background:white;
+margin-top:20px;
+display:none;
+}
+
+#clickGame{
+display:none;
+margin-top:20px;
+}
+
+#reactionGame{
+display:none;
+margin-top:20px;
+}
+
+#reactionBox{
+width:200px;
+height:200px;
+background:red;
+margin:auto;
 cursor:pointer;
 }
 
-#shareBox{
-margin-top:40px;
-background:linear-gradient(135deg,#ff7a18,#ffc107);
-padding:20px;
-border-radius:10px;
-text-align:center;
-color:white;
-}
-
-#leaderboard p{
-font-weight:bold;
-}
 </style>
+
 </head>
 
 <body>
 
-<header>
-<h2>🎮 Chika Games Hub</h2>
-<nav>
-<a onclick="showPage('home')">Home</a>
-<a onclick="showPage('clicker')">Clicker</a>
-<a onclick="showPage('reaction')">Reaction</a>
-<a onclick="showPage('guess')">Guess</a>
-<a onclick="showPage('math')">Math</a>
-<a onclick="showPage('memory')">Memory</a>
-<a onclick="showPage('leaderboardPage')">Leaderboard</a>
-</nav>
-</header>
+<h1>🎮 Fun Game World</h1>
+<p>Select a Game</p>
 
-<!-- HOME -->
-<div id="home" class="page active">
+<button onclick="startShapeGame()">Shape Animation</button>
+<button onclick="startClickGame()">Click Speed Game</button>
+<button onclick="startReactionGame()">Reaction Game</button>
 
-<h2>Welcome!</h2>
+<canvas id="gameCanvas" width="400" height="400"></canvas>
 
-<div class="grid">
-
-<div class="card" onclick="showPage('clicker')">Clicker Game</div>
-<div class="card" onclick="showPage('reaction')">Reaction Game</div>
-<div class="card" onclick="showPage('guess')">Guess Number</div>
-<div class="card" onclick="showPage('math')">Math Challenge</div>
-<div class="card" onclick="showPage('memory')">Memory Game</div>
-
+<div id="clickGame">
+<p>Click the button as fast as you can!</p>
+<button onclick="increaseScore()">CLICK ME</button>
+<h2 id="score">Score: 0</h2>
 </div>
 
-<div id="shareBox">
+<div id="reactionGame">
+<p>Wait for the box to turn GREEN then click!</p>
 
-<h3>🏆 Share & Challenge</h3>
+<div id="reactionBox"></div>
 
-<input id="shareText" readonly style="width:90%"><br>
-
-<button onclick="copyScore()">Copy</button>
-<button onclick="shareWhatsApp()">WhatsApp</button>
-<button onclick="shareTwitter()">Twitter</button>
-
-</div>
-
-</div>
-
-<!-- CLICKER GAME -->
-<div id="clicker" class="page">
-
-<h2>Clicker Game</h2>
-
-<button onclick="clickScore++ ; updateScore('clickerScore',clickScore)">Click!</button>
-
-<p class="score">Score: <span id="clickerScore">0</span></p>
-
-</div>
-
-<!-- REACTION GAME -->
-<div id="reaction" class="page">
-
-<h2>Reaction Game</h2>
-
-<button id="reactionBtn">Wait...</button>
-
-<p class="score">Score: <span id="reactionScore">0</span></p>
-
-</div>
-
-<!-- GUESS GAME -->
-<div id="guess" class="page">
-
-<h2>Guess Number (1-10)</h2>
-
-<input id="guessInput" type="number">
-
-<button onclick="checkGuess()">Guess</button>
-
-<p id="guessResult"></p>
-
-<p class="score">Score: <span id="guessScore">0</span></p>
-
-</div>
-
-<!-- MATH GAME -->
-<div id="math" class="page">
-
-<h2>Math Challenge</h2>
-
-<p id="mathQuestion"></p>
-
-<input id="mathInput" type="number">
-
-<button onclick="checkMath()">Submit</button>
-
-<p class="score">Score: <span id="mathScore">0</span></p>
-
-</div>
-
-<!-- MEMORY GAME -->
-<div id="memory" class="page">
-
-<h2>Memory Game</h2>
-
-<div id="memoryBoard"></div>
-
-<p class="score">Score: <span id="memoryScore">0</span></p>
-
-</div>
-
-<!-- LEADERBOARD -->
-<div id="leaderboardPage" class="page">
-
-<h2>Leaderboard</h2>
-
-<div id="leaderboard"></div>
-
+<h2 id="reactionResult"></h2>
 </div>
 
 <script>
 
-function showPage(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
-document.getElementById(id).classList.add("active")
-}
+/* ------------------ CLICK GAME ------------------ */
 
-let leaderboard=[]
+let score = 0;
 
-function updateLeaderboard(game,score){
+function startClickGame(){
 
-let existing=leaderboard.find(x=>x.game===game)
-
-if(!existing || score>existing.score){
-
-if(existing) existing.score=score
-else leaderboard.push({game,score})
-
-confetti()
+document.getElementById("clickGame").style.display="block";
+document.getElementById("gameCanvas").style.display="none";
+document.getElementById("reactionGame").style.display="none";
 
 }
 
-renderLeaderboard()
-updateShare()
-}
+function increaseScore(){
 
-function renderLeaderboard(){
+score++;
 
-let html=""
-
-leaderboard.forEach(x=>{
-html+=`<p>${x.game} : ${x.score}</p>`
-})
-
-document.getElementById("leaderboard").innerHTML=html
+document.getElementById("score").innerText =
+"Score: " + score;
 
 }
 
-function updateShare(){
+/* ------------------ SHAPE GAME ------------------ */
 
-let high=Math.max(...leaderboard.map(x=>x.score),0)
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-let text=`My high score is ${high}! Try beat me: ${location.href}`
+let x = 50;
+let y = 200;
+let dx = 3;
+let shape = 0;
 
-document.getElementById("shareText").value=text
+function startShapeGame(){
 
-}
-
-function copyScore(){
-
-navigator.clipboard.writeText(document.getElementById("shareText").value)
-
-alert("Copied!")
-
-}
-
-function shareWhatsApp(){
-
-let t=encodeURIComponent(document.getElementById("shareText").value)
-
-window.open(`https://api.whatsapp.com/send?text=${t}`)
+document.getElementById("gameCanvas").style.display="block";
+document.getElementById("clickGame").style.display="none";
+document.getElementById("reactionGame").style.display="none";
 
 }
 
-function shareTwitter(){
+function drawShape(){
 
-let t=encodeURIComponent(document.getElementById("shareText").value)
+ctx.clearRect(0,0,400,400);
 
-window.open(`https://twitter.com/intent/tweet?text=${t}`)
+ctx.fillStyle =
+"rgb("+
+Math.floor(Math.random()*255)+","+
+Math.floor(Math.random()*255)+","+
+Math.floor(Math.random()*255)+")";
+
+if(shape === 0){
+
+ctx.beginPath();
+ctx.arc(x,y,30,0,Math.PI*2);
+ctx.fill();
 
 }
 
-function updateScore(id,val){
+else if(shape === 1){
 
-document.getElementById(id).innerText=val
-
-updateLeaderboard(id,val)
+ctx.fillRect(x-30,y-30,60,60);
 
 }
 
-let clickScore=0
+else{
 
-// Reaction game
+ctx.beginPath();
+ctx.moveTo(x,y-30);
+ctx.lineTo(x-30,y+30);
+ctx.lineTo(x+30,y+30);
+ctx.closePath();
+ctx.fill();
 
-let reactionScore=0
-
-let btn=document.getElementById("reactionBtn")
-
-setTimeout(()=>{
-btn.innerText="CLICK!"
-btn.style.background="green"
-btn.onclick=()=>{
-reactionScore++
-updateScore("reactionScore",reactionScore)
 }
-},2000)
 
-// Guess game
+x += dx;
 
-let secret=Math.floor(Math.random()*10)+1
-let guessScore=0
+if(x > 350 || x < 50){
 
-function checkGuess(){
+dx = -dx;
 
-let g=parseInt(document.getElementById("guessInput").value)
-
-if(g===secret){
-guessScore++
-updateScore("guessScore",guessScore)
-document.getElementById("guessResult").innerText="Correct!"
-secret=Math.floor(Math.random()*10)+1
-}else{
-document.getElementById("guessResult").innerText="Try again!"
 }
 
 }
 
-// Math game
+setInterval(drawShape,500);
 
-let a=Math.floor(Math.random()*10)
-let b=Math.floor(Math.random()*10)
+setInterval(function(){
 
-document.getElementById("mathQuestion").innerText=`${a}+${b}`
+shape++;
 
-let mathScore=0
+if(shape > 2){
 
-function checkMath(){
-
-let ans=parseInt(document.getElementById("mathInput").value)
-
-if(ans===a+b){
-mathScore++
-updateScore("mathScore",mathScore)
-a=Math.floor(Math.random()*10)
-b=Math.floor(Math.random()*10)
-document.getElementById("mathQuestion").innerText=`${a}+${b}`
-}
+shape = 0;
 
 }
 
-// Memory game
+},2000);
 
-let symbols=["🍎","🍎","🍌","🍌","🍇","🍇","🍓","🍓"]
+/* ------------------ REACTION GAME ------------------ */
 
-symbols.sort(()=>0.5-Math.random())
+let startTime;
 
-let board=document.getElementById("memoryBoard")
+function startReactionGame(){
 
-let flipped=[]
-let memoryScore=0
+document.getElementById("reactionGame").style.display="block";
+document.getElementById("clickGame").style.display="none";
+document.getElementById("gameCanvas").style.display="none";
 
-symbols.forEach(s=>{
-
-let div=document.createElement("div")
-div.className="memoryCard"
-div.dataset.val=s
-div.onclick=()=>flip(div)
-board.appendChild(div)
-
-})
-
-function flip(card){
-
-if(card.innerText!=""||flipped.length==2)return
-
-card.innerText=card.dataset.val
-flipped.push(card)
-
-if(flipped.length==2){
-
-if(flipped[0].dataset.val==flipped[1].dataset.val){
-
-memoryScore++
-updateScore("memoryScore",memoryScore)
-flipped=[]
-
-}else{
-
-setTimeout(()=>{
-flipped.forEach(c=>c.innerText="")
-flipped=[]
-},800)
+startReaction();
 
 }
 
+function startReaction(){
+
+let delay = Math.random() * 3000 + 2000;
+
+setTimeout(function(){
+
+let box = document.getElementById("reactionBox");
+
+box.style.background = "green";
+
+startTime = Date.now();
+
+}, delay);
+
 }
+
+document.getElementById("reactionBox").onclick = function(){
+
+let endTime = Date.now();
+
+let reactionTime = (endTime - startTime) / 1000;
+
+document.getElementById("reactionResult").innerText =
+"Your reaction time: " + reactionTime + " seconds";
+
+this.style.background = "red";
+
+startReaction();
 
 }
 
